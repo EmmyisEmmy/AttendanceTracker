@@ -1,0 +1,13 @@
+# Python virtual environment
+.venv/
+
+# Python cache files
+__pycache__/
+*.pyc
+
+# Local database and exported records
+my_database.db
+database_export.csv
+
+# Environment variables
+.env

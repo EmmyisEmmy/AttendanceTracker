@@ -9,8 +9,13 @@ import qrcode
 import os
 
 connection = sqlite3.connect("my_database.db")
+print(os.path.abspath("my_database.db"))
 
 cursor = connection.cursor()
+cursor.execute("PRAGMA table_info(SESSIONS)")
+
+# columns = cursor.fetchall()
+# print(columns)
 
 
 cursor.execute("PRAGMA foreign_keys = ON;")
@@ -22,9 +27,19 @@ CREATE TABLE IF NOT EXISTS SESSIONS(
     course TEXT NOT NULL,
     pin TEXT NOT NULL,
     status TEXT DEFAULT 'ACTIVE',
-    timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
+    timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
+    stop_time DATETIME
 )
 """)
+
+cursor.execute("PRAGMA table_info(SESSIONS)")
+
+columns = [column[1] for column in cursor.fetchall()]
+
+if "stop_time" not in columns:
+    cursor.execute("ALTER TABLE SESSIONS ADD COLUMN stop_time DATETIME")
+
+connection.commit()
 
 
 
@@ -37,12 +52,20 @@ CREATE TABLE IF NOT EXISTS attendance(
     session_id INTEGER,
     studentid VARCHAR(10),                             
     student_name VARCHAR(100),
+    timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (session_id) REFERENCES SESSIONS (id),
     
     CONSTRAINT unique_student_id UNIQUE (studentid, session_id)
 
 )
 """)
+cursor.execute("PRAGMA table_info(attendance)")
+columns = [column[1] for column in cursor.fetchall()]
+
+if "timestamp" not in columns:
+    cursor.execute("ALTER TABLE attendance ADD COLUMN timestamp DATETIME")
+
+connection.commit()
 
 
 app = Flask(__name__)
@@ -478,6 +501,7 @@ def generate_session():
 
 
     connection = sqlite3.connect("my_database.db")
+    print("DATABASE:", os.path.abspath("my_database.db"))
 
     cursor = connection.cursor()
 
@@ -970,4 +994,4 @@ def handle_form():
 
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000, debug=False)
+    app.run(host="0.0.0.0", port=5000, debug=True)

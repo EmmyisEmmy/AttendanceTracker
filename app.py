@@ -61,6 +61,7 @@ def home():
 
     session_id = None
     session_status = None
+    main_id = None
 
     local_ip = get_local_ip()
 

@@ -8,6 +8,13 @@ import socket
 import qrcode
 import os
 
+from pathlib import Path
+
+export_path = Path.home() / "Documents" / "MyAttendX"
+export_path.mkdir(parents=True, exist_ok=True)
+
+csv_file = export_path / "database_export.csv"
+
 connection = sqlite3.connect("my_database.db")
 print(os.path.abspath("my_database.db"))
 
@@ -452,7 +459,7 @@ def export_attendance():
 
     headers = [description[0] for description in cursor.description]
 
-    with open("database_export.csv", "w", newline="", encoding="utf-8") as file:
+    with open(csv_file, "w", newline="", encoding="utf-8") as file:
 
       writer = csv.writer(file)
 
@@ -469,7 +476,7 @@ def export_attendance():
     conn.close()
 
     return send_file(
-      "database_export.csv",
+      csv_file,
       as_attachment=True,
       download_name="attendance.csv",
       mimetype="text/csv"

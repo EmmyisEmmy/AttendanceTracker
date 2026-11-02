@@ -60,6 +60,7 @@ def home():
     head_count = session.get('count')
 
     session_id = None
+    session_status = None
 
     local_ip = get_local_ip()
 
@@ -968,4 +969,4 @@ def handle_form():
 
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000, debug=True)
+    app.run(host="0.0.0.0", port=5000, debug=False)
